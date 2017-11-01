@@ -13,8 +13,8 @@ if not os.path.isdir(args.dir):
     exit()
 
 # CONSTANTS
-prefixes = ['VID_', 'VID-', 'IMG_', 'IMG-', 'PHOTO_', 'PANO_']
-regexps = ['(\d{4})-(\d{2})-(\d{02}).*']
+prefixes = ['VID_', 'VID-', 'IMG_', 'IMG-', 'PHOTO_', 'PANO_', 'AUD-']
+regexps = ['(\d{4})-(\d{2})-(\d{02}).*', '(\d{4})-(\d{2})-(WA\d{02}).*']
 undatedfolder = os.path.join(args.dir, "undated")
 
 # MAIN SCRIPT

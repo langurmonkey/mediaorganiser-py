@@ -27,8 +27,8 @@ def move(folder, yearmonth, filename, i, n):
 
 
 # CONSTANTS
-prefixes = ['VID_', 'VID-', 'IMG_', 'IMG-', 'PHOTO_', 'PANO_']
-regexps = ['(\d{4})-(\d{2})-(\d{02}).*']
+prefixes = ['VID_', 'VID-', 'IMG_', 'IMG-', 'PHOTO_', 'PANO_', 'AUD-']
+regexps = ['(\d{4})-(\d{2})-(\d{02}).*', '(\d{4})-(\d{2})-(WA\d{02}).*']
 extexif = ['.jpg']
 extraw = ['.rw2', '.cr2']
 undatedfolder = os.path.join(args.dir, "undated")

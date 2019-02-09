@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from os import walk
-import argparse, os, shutil, re
+import argparse, os, shutil, re, time
 import exifread, subprocess
 
 parser = argparse.ArgumentParser(description='Process some integers.')
@@ -31,6 +31,7 @@ prefixes = ['VID_', 'VID-', 'IMG_', 'IMG-', 'PHOTO_', 'PANO_', 'AUD-']
 regexps = ['(\d{4})-(\d{2})-(\d{02}).*', '(\d{4})-(\d{2})-(WA\d{02}).*']
 extexif = ['.jpg']
 extraw = ['.rw2', '.cr2']
+filetime = ['mp4']
 undatedfolder = os.path.join(args.dir, "undated")
 
 # MAIN SCRIPT
@@ -39,6 +40,7 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
     i = 1
     for filename in filenames:
         found = False
+
 
         ##################
         # PREFIXES
@@ -51,6 +53,7 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
                 move(args.dir, yearmonth, filename, i, n)
                 i = i+1
                 break
+
 
         ##################
         # REGEXP
@@ -82,6 +85,7 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
                 i = i + 1 
                 break
 
+
         ############################
         # RAW with extensions      #
         ############################
@@ -102,6 +106,21 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
                         break
                 break
 
+
+        ############################
+        # File time (video)        #
+        ############################
+        for extension in filetime:
+            if not found and filename.lower().endswith(extension.lower()):
+                t = time.gmtime(os.path.getmtime(filename))
+                yearmonth = str(t[0]) + str(t[1]).zfill(2)
+
+                found = True
+                move(args.dir, yearmonth, filename, i, n)
+                i = i + 1 
+                break
+
+
         ##################
         # DEFAULT
         ##################
@@ -117,4 +136,5 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
 
             print("%d of %d - %d%% completed: %s" % (i, n, i*100.0/n, filename))
             i = i+1
+
     break

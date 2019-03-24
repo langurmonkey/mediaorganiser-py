@@ -27,7 +27,7 @@ def move(folder, yearmonth, filename, i, n):
 
 
 # CONSTANTS
-prefixes = ['VID_', 'VID-', 'IMG_', 'IMG-', 'PHOTO_', 'PANO_', 'AUD-']
+prefixes = ['VID_', 'VID-', 'IMG_', 'IMG-', 'PHOTO_', 'PANO_', 'AUD-', 'snap_']
 regexps = ['(\d{4})-(\d{2})-(\d{02}).*', '(\d{4})-(\d{2})-(WA\d{02}).*']
 extexif = ['.jpg']
 extraw = ['.rw2', '.cr2']
@@ -39,6 +39,7 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
     n = len(filenames)
     i = 1
     for filename in filenames:
+        filepath = os.path.join(args.dir, filename)
         found = False
 
 
@@ -74,7 +75,7 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
         ############################
         for extension in extexif:
             if not found and filename.lower().endswith(extension.lower()):
-                f = open(filename, 'rb')
+                f = open(filepath, 'rb')
                 tags = exifread.process_file(f)
                 
                 datetime = tags['Image DateTime'].values
@@ -91,7 +92,7 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
         ############################
         for extension in extraw:
             if not found and filename.lower().endswith(extension.lower()):
-                result = subprocess.run(['identify', '-verbose', args.dir + filename], stdout=subprocess.PIPE)
+                result = subprocess.run(['identify', '-verbose', filepath], stdout=subprocess.PIPE)
                 resstr = result.stdout.decode('utf-8')
 
                 for line in resstr.splitlines():
@@ -112,7 +113,7 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
         ############################
         for extension in filetime:
             if not found and filename.lower().endswith(extension.lower()):
-                t = time.gmtime(os.path.getmtime(filename))
+                t = time.gmtime(os.path.getmtime(filepath))
                 yearmonth = str(t[0]) + str(t[1]).zfill(2)
 
                 found = True
@@ -130,9 +131,8 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
                 os.makedirs(undatedfolder)
 
             # Move
-            ffrom = os.path.join(args.dir, filename)
             fto = os.path.join(undatedfolder, filename)
-            shutil.move(ffrom, fto)
+            shutil.move(filepath, fto)
 
             print("%d of %d - %d%% completed: %s" % (i, n, i*100.0/n, filename))
             i = i+1

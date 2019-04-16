@@ -4,7 +4,7 @@ from os import walk
 import argparse, os, shutil, re, time
 import exifread, subprocess
 
-parser = argparse.ArgumentParser(description='Process some integers.')
+parser = argparse.ArgumentParser(description='Organise media files into folders by date')
 requiredNamed = parser.add_argument_group('required named arguments')
 requiredNamed.add_argument("-d", "--dir",  help="The directory", required=True)
 args = parser.parse_args()
@@ -28,8 +28,8 @@ def move(folder, yearmonth, filename, i, n):
 
 # CONSTANTS
 prefixes = ['VID_', 'VID-', 'IMG_', 'IMG-', 'PHOTO_', 'PANO_', 'AUD-', 'snap_']
-regexps = ['(\d{4})-(\d{2})-(\d{02}).*', '(\d{4})-(\d{2})-(WA\d{02}).*']
-extexif = ['.jpg']
+regexps = ['(\d{4})-(\d{2})-(\d{02})', '(\d{4})-(\d{2})-(WA\d{02})']
+extexif = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.dng']
 extraw = ['.rw2', '.cr2']
 filetime = ['mp4']
 undatedfolder = os.path.join(args.dir, "undated")
@@ -44,7 +44,7 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
 
 
         ##################
-        # PREFIXES
+        # PREFIXES       #
         ##################
         for prefix in prefixes:
             if filename.startswith(prefix):
@@ -57,12 +57,14 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
 
 
         ##################
-        # REGEXP
+        # REGEXP         #
         ##################
         for regexp in regexps:
             pattern = re.compile(regexp)
-            if not found and pattern.match(filename):
-                yearmonth = filename[:4] + filename[5:7]
+            mtch = re.search(pattern, filename)
+            if not found and mtch:
+                date = mtch.group()
+                yearmonth = date[:4] + date[5:7]
 
                 found = True
                 move(args.dir, yearmonth, filename, i, n)
@@ -123,7 +125,7 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
 
 
         ##################
-        # DEFAULT
+        # DEFAULT        #
         ##################
         if not found:
             # To default folder

@@ -27,7 +27,7 @@ def move(folder, yearmonth, filename, i, n):
 
 
 # CONSTANTS
-prefixes = ['VID_', 'VID-', 'IMG_', 'IMG-', 'PHOTO_', 'PANO_', 'AUD-', 'snap_']
+prefixes = ['VID_', 'VID-', 'IMG_', 'IMG-', 'PHOTO_', 'PANO_', 'AUD-', 'snap_', '']
 regexps = ['(\d{4})-(\d{2})-(\d{02})', '(\d{4})-(\d{2})-(WA\d{02})']
 extexif = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.dng']
 extraw = ['.rw2', '.cr2']
@@ -80,13 +80,14 @@ for (dirpath, dirnames, filenames) in walk(args.dir):
                 f = open(filepath, 'rb')
                 tags = exifread.process_file(f)
                 
-                datetime = tags['Image DateTime'].values
-                yearmonth = datetime[:4] + datetime[5:7]
+                if 'Image DateTime' in tags.keys():
+                    datetime = tags['Image DateTime'].values
+                    yearmonth = datetime[:4] + datetime[5:7]
 
-                found = True
-                move(args.dir, yearmonth, filename, i, n)
-                i = i + 1 
-                break
+                    found = True
+                    move(args.dir, yearmonth, filename, i, n)
+                    i = i + 1 
+                    break
 
 
         ############################
